@@ -39,9 +39,7 @@ function main() {
     gl.clearColor(0.3, 0.3, 0.1, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.enable(gl.DEPTH_TEST);
-    gl.enable(gl.CULL_FACE);
-    gl.frontFace(gl.CCW);
-    gl.cullFace(gl.BACK);
+
 
     shader3D = new Shader("Shaders/vertex3D.shader", "Shaders/fragment3D.shader");
 
@@ -111,5 +109,13 @@ function loop(timestamp) {
           Render(meshes[i], shader3D);
         }
     }
+    var camPos = vec3.create();
+    camera.Update();
+    camera.GetFront();
+    camPos[0] = meshes[0].position[0] - (camera.GetFront()[0] * 5);
+    camPos[1] = meshes[1].position[1] - (camera.GetFront()[1] * 5);
+    camPos[2] = meshes[2].position[2] - (camera.GetFront()[2] * 5);
+
+    camera.SetPosition(camPos);
     requestAnimationFrame(loop);
 };

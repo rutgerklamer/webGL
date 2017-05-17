@@ -7,8 +7,6 @@ var Entity = function()
   this.position = vec3.create();
   this.Update = function(dt)
   {
-    this.position[1] -= 0.01;
-
     var angle = 0;
     var xRotationMatrix = new Float32Array(16);
     var yRotationMatrix = new Float32Array(16);

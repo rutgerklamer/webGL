@@ -8,7 +8,6 @@ function Camera() {
 
     this.yaw = 1;;
     this.pitch = 1;;
-
     this.Update = function() {
         var frontTemp = vec3.create();
         frontTemp[0] = Math.cos(this.yaw * (Math.PI / 180)) * Math.cos((this.pitch * (Math.PI / 180)));
@@ -20,6 +19,12 @@ function Camera() {
     }
     this.GetPosition = function() {
         return this.position;
+    }
+    this.SetPosition = function(position) {
+      this.position = position;
+    }
+    this.GetFront = function() {
+      return this.front;
     }
     this.GetViewMatrix = function() {
         var viewMatrix = new Float32Array(16);
@@ -40,7 +45,6 @@ function Camera() {
         } else if (this.pitch <= -89.0) {
             this.pitch = -89.0;
         }
-        this.Update();
     }
     this.ProcessKeys = function() {
         if (keys["KeyW"]) {
