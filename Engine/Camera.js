@@ -48,17 +48,17 @@ function Camera() {
     }
     this.ProcessKeys = function() {
         if (keys["KeyW"]) {
-            vec3.add(this.position, this.position, this.front);
+            /*vec3.add(this.position, this.position, this.front);*/
         }
         if (keys["KeyS"]) {
-            vec3.subtract(this.position, this.position, this.front);
+            /*vec3.subtract(this.position, this.position, this.front);*/
         }
         if (keys["KeyA"]) {
-            vec3.subtract(this.position, this.position, this.right);
+            /*vec3.subtract(this.position, this.position, this.right);*/
 
         }
         if (keys["KeyD"]) {
-            vec3.add(this.position, this.position, this.right);
+            /*vec3.add(this.position, this.position, this.right);*/
         }
     }
 }
