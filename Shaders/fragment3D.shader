@@ -10,7 +10,7 @@ void main()
 {
 vec4 color = texture2D(sampler, fragTexCoord);
 if (color.a < 0.1) { discard; }
-  vec3 lightColor = vec3(1.6, 0.6, 0.6);
+  vec3 lightColor = vec3(0.6, 0.6, 0.6);
 
   float ambientStrength = 1.1;
   vec3 ambient = vec3(ambientStrength) * lightColor;
