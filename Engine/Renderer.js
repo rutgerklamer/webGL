@@ -8,6 +8,7 @@ function Render(mesh, shader) {
     var matWorldUniformLocation = gl.getUniformLocation(shader3D.program, 'mWorld');
     var matViewUniformLocation = gl.getUniformLocation(shader3D.program, 'mView');
     var matProjUniformLocation = gl.getUniformLocation(shader3D.program, 'mProj');
+    var lightPositionUniformLocation = gl.getUniformLocation(shader3D.program, 'lightPos');
 
     var worldMatrix = new Float32Array(16);
     var viewMatrix = new Float32Array(16);
@@ -20,7 +21,8 @@ function Render(mesh, shader) {
 
     gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix);
     gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
-
+    gl.uniform3f(lightPositionUniformLocation, camera.GetPosition()[0], camera.GetPosition()[1], camera.GetPosition()[2]);
+    console.log(camera.GetPosition());
 
     gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, mesh.worldMatrix);
 

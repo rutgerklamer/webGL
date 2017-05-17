@@ -112,9 +112,9 @@ function loop(timestamp) {
     var camPos = vec3.create();
     camera.Update();
     camera.GetFront();
-    camPos[0] = meshes[0].position[0] - (camera.GetFront()[0] * 5);
-    camPos[1] = meshes[1].position[1] - (camera.GetFront()[1] * 5);
-    camPos[2] = meshes[2].position[2] - (camera.GetFront()[2] * 5);
+    camPos[0] = meshes[0].position[0] - (camera.GetFront()[0] * 10);
+    camPos[1] = meshes[1].position[1] - (camera.GetFront()[1] * 10);
+    camPos[2] = meshes[2].position[2] - (camera.GetFront()[2] * 10);
 
     camera.SetPosition(camPos);
     requestAnimationFrame(loop);
