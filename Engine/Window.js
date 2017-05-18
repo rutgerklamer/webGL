@@ -17,6 +17,8 @@ var shader3D;
 var camera;
 
 var mesh;
+
+var light;
 function main() {
     camera = new Camera();
 
@@ -52,6 +54,12 @@ function main() {
         meshes[i].position[2] = Rand() * 5;
         meshes[i].boxTexture = CreateTexture();
     }
+    light = new Entity();
+    light.CreateMesh();
+    light.position[0] = 10;
+    light.position[1] = 10;
+    light.position[2] = 10;
+    light.boxTexture = CreateTexture();
 
     CreateTexture();
     CreateSkybox();
@@ -109,13 +117,14 @@ function loop(timestamp) {
           Render(meshes[i], shader3D);
         }
     }
+    Render(light,shader3D);
     var camPos = vec3.create();
     camera.Update();
     camera.GetFront();
     camPos[0] = meshes[0].position[0] - (camera.GetFront()[0] * 15);
     camPos[1] = meshes[1].position[1] - (camera.GetFront()[1] * 15);
     camPos[2] = meshes[2].position[2] - (camera.GetFront()[2] * 15);
-
-    camera.SetPosition(camPos);
+    camera.ProcessKeys();
+  //  camera.SetPosition(camPos);
     requestAnimationFrame(loop);
 };
