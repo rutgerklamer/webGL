@@ -2,7 +2,7 @@ function Mesh() {
     var boxVertices;
     var boxIndices;
     this.boxTexture;
-
+    this.normalMap;
     this.CreateMesh = function() {
         boxVertices = [
             -1.0, 1.0, -1.0, 0.0, 0.0, 0.0,  1.0,  0.0,

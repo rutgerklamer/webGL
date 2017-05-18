@@ -14,6 +14,7 @@ var firstBox2;
 
 var meshes = new Array();
 var shader3D;
+var shader2D;
 var camera;
 
 var mesh;
@@ -21,6 +22,7 @@ var mesh;
 var light;
 function main() {
     camera = new Camera();
+    camera.SetPosition([5.75,11.2,11.2]);
 
     document.onkeydown = handleKeyDown;
     document.onkeyup = handleKeyUp;
@@ -42,26 +44,29 @@ function main() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.enable(gl.DEPTH_TEST);
 
+    shader2D = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
+    shader3D = new Shader("Shaders/shader3D.vert", "Shaders/shader3D.frag");
+    for (var x = 0; x < 30; x++) {
+      for (var y = 0; y < 30; y++) {
+        meshes.push(new Entity());
 
-    shader3D = new Shader("Shaders/vertex3D.shader", "Shaders/fragment3D.shader");
-
-    for (var i = 0; i < 10; i++) {
-        meshes[i] = new Entity();
-
-        meshes[i].CreateMesh();
-        meshes[i].position[0] = Rand() * 5;
-        meshes[i].position[1] = Rand() * 5;
-        meshes[i].position[2] = Rand() * 5;
-        meshes[i].boxTexture = CreateTexture();
+        meshes[meshes.length-1].CreateMesh();
+        meshes[meshes.length-1].position[0] = x *2;
+        meshes[meshes.length-1].position[1] = y * 2;
+        meshes[meshes.length-1].position[2] = 0;
+        meshes[meshes.length-1].boxTexture = CreateTexture("crate-image");
+        meshes[meshes.length-1].normalMap = CreateTexture("normal");
+      }
     }
     light = new Entity();
     light.CreateMesh();
     light.position[0] = 10;
     light.position[1] = 10;
-    light.position[2] = 10;
-    light.boxTexture = CreateTexture();
+    light.position[2] = 15;
+    light.boxTexture = CreateTexture("normal");
+    light.normalMap = CreateTexture("normal");
 
-    CreateTexture();
+    CreateTexture("crate-image");
     CreateSkybox();
     shader3D.Use();
 

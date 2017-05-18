@@ -6,8 +6,9 @@ function Camera() {
     this.worldUp = vec3.create();
     this.worldUp[1] = 1;
 
-    this.yaw = 1;;
-    this.pitch = 1;;
+    this.yaw = 252;;
+    this.pitch = -40;;
+
     this.Update = function() {
         var frontTemp = vec3.create();
         frontTemp[0] = Math.cos(this.yaw * (Math.PI / 180)) * Math.cos((this.pitch * (Math.PI / 180)));
