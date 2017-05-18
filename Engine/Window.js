@@ -46,8 +46,8 @@ function main() {
 
     shader2D = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
     shader3D = new Shader("Shaders/shader3D.vert", "Shaders/shader3D.frag");
-    for (var x = 0; x < 30; x++) {
-      for (var y = 0; y < 30; y++) {
+    for (var x = 0; x < 10; x++) {
+      for (var y = 0; y < 10; y++) {
         meshes.push(new Entity());
 
         meshes[meshes.length-1].CreateMesh();
@@ -105,7 +105,7 @@ function loop(timestamp) {
     }
 
 
-    gl.clearColor(0.45, 0.87, 0.42, 1.0);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
     camera.ProcessKeys();
     shader3D.Use();
