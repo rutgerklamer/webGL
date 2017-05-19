@@ -111,7 +111,7 @@ function Mesh() {
           vertices.push(tangent[2]);
         }
         var j = 0;
-        /*for (i = 0; i < vertices.length/4; i+=11)
+        for (i = 0; i < vertices.length/4; i+=11)
         {
           vertices[i * 4 + 11 + 7] = vertices[i * 4 + 7];
           vertices[i * 4 + 11 + 8] = vertices[i * 4+ 8];
@@ -123,7 +123,7 @@ function Mesh() {
           vertices[i * 4 + 33 + 8] = vertices[i * 4+ 8];
           vertices[i * 4 + 33 + 9] = vertices[i * 4+ 9];
           console.log(vertices[i* 4]);
-        }*/
+        }
         //for (i = 0; i < boxVertices.length; i ++)
 
         console.log(vertices);

@@ -4,6 +4,8 @@ varying vec2 fragTexCoord;
 varying vec3 fragNormals;
 varying vec3 worldPos;
 varying vec3 Tangent;
+varying mat4 MWorld;
+varying mat3 toTangentSpace;
 
 uniform vec3 lightPosition;
 uniform vec3 camPosition;
@@ -18,9 +20,10 @@ void main()
 
     vec4 DiffuseColor = texture2D(MyTexture, fragTexCoord );
 
-    vec3 NormalMap = texture2D(normalMap, fragTexCoord ).rgb;
+    vec3 NormalMap = normalize(toTangentSpace * (255.0/128.0 * texture2D(normalMap, fragTexCoord ).rgb - 1.0));
 
-    vec3 norm = normalize(NormalMap);
+    vec3 norm = normalize(255.0/128.0 * NormalMap - 1.0);
+    norm = NormalMap;
 
 
     vec3 lightColor = vec3(0.6,0.6,0.6);
@@ -29,13 +32,13 @@ void main()
     vec3 ambient = ambientStrength * lightColor;
 
     // Diffuse
-    vec3 lightDir = normalize(lightPosition - worldPos);
+    vec3 lightDir =  normalize(lightPosition - -worldPos);
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = diff * lightColor;
 
     // Specular
     float specularStrength = 3.5;
-    vec3 viewDir = normalize(camPosition - worldPos);
+    vec3 viewDir =  normalize(camPosition - -worldPos);
     vec3 reflectDir = reflect(-lightDir, norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
     vec3 specular = specularStrength * spec * lightColor;
@@ -46,5 +49,5 @@ void main()
     gl_FragColor = color  + vec4(fragNormals * 0.001,0);
 
 
-  //  gl_FragColor = vec4(biTangent,1);
+    //gl_FragColor = vec4(lightColor * toTangentSpace,1);
 }

@@ -9,6 +9,8 @@ varying vec2 fragTexCoord;
 varying vec3 fragNormals;
 varying vec3 worldPos;
 varying vec3 Tangent;
+varying mat4 MWorld;
+varying mat3 toTangentSpace;
 
 uniform mat4 mWorld;
 uniform mat4 mView;
@@ -21,6 +23,14 @@ void main()
   vec4 worldPosition =  mWorld * vec4(vertPosition, 1.0);
   worldPos = worldPosition.xyz;
   Tangent = worldPos* tangent;
+
+  MWorld = mWorld;
+  vec3 n = normalize((mWorld* vec4(normalCoord,0)).xyz);
+  vec3 t = normalize((mWorld* vec4(tangent,0)).xyz);
+
+  t = normalize(t-dot(t,n) * n);
+  vec3 b = cross(t,n);
+  toTangentSpace = mat3(t,b,n);
 
   gl_Position = mProj * mView * worldPosition;
 }
