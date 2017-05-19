@@ -31,12 +31,13 @@ function Render(mesh, shader) {
     gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, mesh.worldMatrix);
 
     mesh.Update(dt);
-    gl.uniform1i(textureUniformLocation, 0);  // texture unit 0
-    gl.uniform1i(normalMapUniformLocation, 1);  // texture unit 1
+    gl.uniform1i(textureUniformLocation, 0);
+    gl.uniform1i(normalMapUniformLocation, 1);
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, mesh.boxTexture);
     gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture(gl.TEXTURE_2D, mesh.normalMap);
+
 
     gl.drawElements(gl.TRIANGLES, mesh.boxIndices.length, gl.UNSIGNED_SHORT, 0);
 }

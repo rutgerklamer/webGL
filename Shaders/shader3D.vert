@@ -3,10 +3,12 @@ precision mediump float;
 attribute vec3 vertPosition;
 attribute vec2 vertTexCoord;
 attribute vec3 normalCoord;
+attribute vec3 tangent;
 
 varying vec2 fragTexCoord;
 varying vec3 fragNormals;
 varying vec3 worldPos;
+varying vec3 Tangent;
 
 uniform mat4 mWorld;
 uniform mat4 mView;
@@ -18,5 +20,7 @@ void main()
   fragTexCoord = vertTexCoord;
   vec4 worldPosition =  mWorld * vec4(vertPosition, 1.0);
   worldPos = worldPosition.xyz;
+  Tangent = worldPos* tangent;
+
   gl_Position = mProj * mView * worldPosition;
 }

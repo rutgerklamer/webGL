@@ -20,5 +20,11 @@ var Entity = function()
     mat4.mul(this.worldMatrix, yRotationMatrix, xRotationMatrix);
     mat4.translate(this.worldMatrix, this.worldMatrix, this.position);
     mat4.scale(this.worldMatrix, this.worldMatrix, this.scale);
+
+    /*this.VBO = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.VBO);
+
+    this.IBO = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.IBO);*/
   }
 }

@@ -17,9 +17,9 @@ var shader3D;
 var shader2D;
 var camera;
 
-var mesh;
-
 var light;
+var floor;
+var shadowMesh;
 function main() {
     camera = new Camera();
     camera.SetPosition([5.75,11.2,11.2]);
@@ -46,18 +46,20 @@ function main() {
 
     shader2D = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
     shader3D = new Shader("Shaders/shader3D.vert", "Shaders/shader3D.frag");
-    for (var x = 0; x < 10; x++) {
+
+    /*for (var x = 0; x < 10; x++) {
       for (var y = 0; y < 10; y++) {
         meshes.push(new Entity());
 
         meshes[meshes.length-1].CreateMesh();
-        meshes[meshes.length-1].position[0] = x *2;
+        meshes[meshes.length-1].position[0] = x * 2;
         meshes[meshes.length-1].position[1] = y * 2;
         meshes[meshes.length-1].position[2] = 0;
         meshes[meshes.length-1].boxTexture = CreateTexture("crate-image");
         meshes[meshes.length-1].normalMap = CreateTexture("normal");
       }
-    }
+    }*/
+
     light = new Entity();
     light.CreateMesh();
     light.position[0] = 10;
@@ -65,10 +67,23 @@ function main() {
     light.position[2] = 15;
     light.boxTexture = CreateTexture("normal");
     light.normalMap = CreateTexture("normal");
+    shadowMesh = new Entity();
+    shadowMesh.LoadObject();
+    shadowMesh.position = [5,5,7.5];
+    shadowMesh.scale = [1,1,1];
+    shadowMesh.boxTexture = CreateTexture("crate-image");
+    shadowMesh.normalMap = CreateTexture("normal");
+    floor = new Entity();
+    floor.CreateMesh();
+    floor.position = [9,-11,10];
+    floor.scale = [10,10,10];
+    floor.boxTexture = CreateTexture("crate-image");
+    floor.normalMap = CreateTexture("normal");
 
     CreateTexture("crate-image");
     CreateSkybox();
     shader3D.Use();
+
 
     document.getElementsByTagName("canvas")[0].addEventListener("click", function() {
         this.requestPointerLock();
@@ -122,13 +137,17 @@ function loop(timestamp) {
           Render(meshes[i], shader3D);
         }
     }
+
     Render(light,shader3D);
+    Render(floor,shader3D);
+    Render(shadowMesh,shader3D);
+
     var camPos = vec3.create();
     camera.Update();
     camera.GetFront();
-    camPos[0] = meshes[0].position[0] - (camera.GetFront()[0] * 15);
+    /*camPos[0] = meshes[0].position[0] - (camera.GetFront()[0] * 15);
     camPos[1] = meshes[1].position[1] - (camera.GetFront()[1] * 15);
-    camPos[2] = meshes[2].position[2] - (camera.GetFront()[2] * 15);
+    camPos[2] = meshes[2].position[2] - (camera.GetFront()[2] * 15);*/
     camera.ProcessKeys();
   //  camera.SetPosition(camPos);
     requestAnimationFrame(loop);
