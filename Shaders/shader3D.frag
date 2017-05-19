@@ -49,5 +49,5 @@ void main()
     gl_FragColor = color  + vec4(fragNormals * 0.001,0);
 
 
-    //gl_FragColor = vec4(lightColor * toTangentSpace,1);
+//    gl_FragColor = vec4(vec3(1,1,1) * toTangentSpace,1);
 }
