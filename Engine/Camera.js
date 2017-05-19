@@ -49,19 +49,19 @@ function Camera() {
     }
     this.ProcessKeys = function() {
         if (keys["KeyW"]) {
-            var front = vec3.divide(this.right, this.front, [10,10,10])
+            var front = vec3.divide(this.right, this.front, [5,5,5])
             vec3.add(this.position, this.position, front);
         }
         if (keys["KeyS"]) {
-            var front = vec3.divide(this.right, this.front, [10,10,10])
+            var front = vec3.divide(this.right, this.front, [5,5,5])
             vec3.subtract(this.position, this.position, front);
         }
         if (keys["KeyA"]) {
-            var right = vec3.divide(this.right, this.right, [10,10,10])
+            var right = vec3.divide(this.right, this.right, [5,5,5])
             vec3.subtract(this.position, this.position, right);
         }
         if (keys["KeyD"]) {
-            var right = vec3.divide(this.right, this.right, [10,10,10])
+            var right = vec3.divide(this.right, this.right, [5,5,5])
             vec3.add(this.position, this.position, right);
         }
     }

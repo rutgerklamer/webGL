@@ -20,7 +20,7 @@ void main()
 
     vec4 DiffuseColor = texture2D(MyTexture, fragTexCoord );
 
-    vec3 NormalMap = normalize(toTangentSpace * (255.0/128.0 * texture2D(normalMap, fragTexCoord ).rgb - 1.0));
+    vec3 NormalMap = normalize(toTangentSpace * (2.0 * texture2D(normalMap, fragTexCoord ).rgb - 1.0));
 
     vec3 norm = normalize(255.0/128.0 * NormalMap - 1.0);
     norm = NormalMap;
@@ -32,13 +32,13 @@ void main()
     vec3 ambient = ambientStrength * lightColor;
 
     // Diffuse
-    vec3 lightDir =  normalize(lightPosition - -worldPos);
+    vec3 lightDir =  normalize(lightPosition - worldPos);
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = diff * lightColor;
 
     // Specular
     float specularStrength = 3.5;
-    vec3 viewDir =  normalize(camPosition - -worldPos);
+    vec3 viewDir =  normalize(camPosition - worldPos);
     vec3 reflectDir = reflect(-lightDir, norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
     vec3 specular = specularStrength * spec * lightColor;

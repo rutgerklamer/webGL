@@ -139,6 +139,7 @@ function loop(timestamp) {
     }
 
     Render(light,shader3D);
+    light.position[0] += 0.1;
     Render(floor,shader3D);
     Render(shadowMesh,shader3D);
 
