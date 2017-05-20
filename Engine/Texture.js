@@ -16,11 +16,17 @@ function CreateTexture(string) {
     return boxTexture;
 }
 
-function CreateSkybox() {
+function CreateCubemap() {
     skyboxTexture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_CUBE_MAP, skyboxTexture);
     for (var i = 0; i < 6; i++) {
-        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, document.getElementById('crate-image'));
+      if (i == 2) {
+          gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, document.getElementById('crate-image'));
+      }
+      else
+      {
+        gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, document.getElementById('normal'));
+      }
     }
     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);

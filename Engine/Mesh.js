@@ -3,8 +3,14 @@ function Mesh() {
     this.boxIndices;
     this.boxTexture;
     this.normalMap;
+    this.depthMap;
+    this.hasLighting = 1;
+
     this.VBO;
     this.IBO;
+
+    this.indices;
+    this.vertices;
     this.CreateMesh = function() {
         boxVertices = [
             -1.0, 1.0, -1.0, 0.0, 0.0, 0.0,  1.0,  0.0,
@@ -122,22 +128,20 @@ function Mesh() {
           vertices[i * 4 + 33 + 7] = vertices[i * 4 + 7];
           vertices[i * 4 + 33 + 8] = vertices[i * 4+ 8];
           vertices[i * 4 + 33 + 9] = vertices[i * 4+ 9];
-          console.log(vertices[i* 4]);
         }
         //for (i = 0; i < boxVertices.length; i ++)
 
-        console.log(vertices);
 
 
-        this.boxIndices = boxIndices;
-
+        this.indices = boxIndices;
+        this.vertices = vertices;
         this.VBO = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.VBO);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
 
         this.IBO = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.IBO);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.boxIndices), gl.STATIC_DRAW);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.STATIC_DRAW);
 
         var positionAttribLocation = gl.getAttribLocation(shader3D.program, 'vertPosition');
         var texCoordAttribLocation = gl.getAttribLocation(shader3D.program, 'vertTexCoord');
@@ -153,8 +157,27 @@ function Mesh() {
         gl.enableVertexAttribArray(normalAttribLocation);
         gl.enableVertexAttribArray(tangentAttribLocation);
     }
-    this.Update = function() {
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.vertex_buffer);
+    this.Draw = function() {
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.VBO);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
+
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.IBO);
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.STATIC_DRAW);
+
+      var positionAttribLocation = gl.getAttribLocation(shader3D.program, 'vertPosition');
+      var texCoordAttribLocation = gl.getAttribLocation(shader3D.program, 'vertTexCoord');
+      var normalAttribLocation = gl.getAttribLocation(shader3D.program, 'normalCoord');
+      var tangentAttribLocation = gl.getAttribLocation(shader3D.program, 'tangent');
+
+      gl.vertexAttribPointer(positionAttribLocation, 3, gl.FLOAT, gl.FALSE, 11 * Float32Array.BYTES_PER_ELEMENT, 0);
+      gl.vertexAttribPointer( texCoordAttribLocation, 2, gl.FLOAT, gl.FALSE, 11 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+      gl.vertexAttribPointer( normalAttribLocation, 3, gl.FLOAT, gl.FALSE, 11 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+      gl.vertexAttribPointer( tangentAttribLocation, 3, gl.FLOAT, gl.FALSE, 11 * Float32Array.BYTES_PER_ELEMENT, 8 * Float32Array.BYTES_PER_ELEMENT);
+      gl.enableVertexAttribArray(positionAttribLocation);
+      gl.enableVertexAttribArray(texCoordAttribLocation);
+      gl.enableVertexAttribArray(normalAttribLocation);
+      gl.enableVertexAttribArray(tangentAttribLocation);
+
     }
     this.LoadObject = function()
     {
@@ -221,36 +244,43 @@ function Mesh() {
       var indices = new Array();
       for (k = 0; k < vertexIndices.length; k++) {
         var vertexIndex = vertexIndices[k];
-        vertices[k * 8] = vertexArray[vertexIndex-1][0];
-        vertices[k * 8 + 1] = vertexArray[vertexIndex-1][1];
-        vertices[k * 8 + 2] = vertexArray[vertexIndex-1][2];
+        vertices[k * 11] = vertexArray[vertexIndex-1][0];
+        vertices[k * 11 + 1] = vertexArray[vertexIndex-1][1];
+        vertices[k * 11 + 2] = vertexArray[vertexIndex-1][2];
         var uvIndex = uvIndices[k];
-        vertices[k * 8 + 3] = uvArray[uvIndex-1][0];
-        vertices[k * 8 + 4] = uvArray[uvIndex-1][1];
+        vertices[k * 11 + 3] = uvArray[uvIndex-1][0];
+        vertices[k * 11 + 4] = uvArray[uvIndex-1][1];
         var normalIndex = normalIndices[k];
-        vertices[k * 8 + 5] = normalArray[normalIndex-1][0];
-        vertices[k * 8 + 6] = normalArray[normalIndex-1][1];
-        vertices[k * 8 + 7] = normalArray[normalIndex-1][2];
+        vertices[k * 11 + 5] = normalArray[normalIndex-1][0];
+        vertices[k * 11 + 6] = normalArray[normalIndex-1][1];
+        vertices[k * 11 + 7] = normalArray[normalIndex-1][2];
+
+        vertices[k * 11 + 8] = 1;
+        vertices[k * 11 + 9] = 1;
+        vertices[k * 11 + 10] = 1;
         indices.push(k);
       }
-      this.boxIndices = indices;
-
+      this.indices = indices;
+      this.vertices = vertices;
       this.VBO = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, this.VBO);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
 
       this.IBO = gl.createBuffer();
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.IBO);
-      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.boxIndices), gl.STATIC_DRAW);
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.STATIC_DRAW);
 
       var positionAttribLocation = gl.getAttribLocation(shader3D.program, 'vertPosition');
       var texCoordAttribLocation = gl.getAttribLocation(shader3D.program, 'vertTexCoord');
       var normalAttribLocation = gl.getAttribLocation(shader3D.program, 'normalCoord');
-      gl.vertexAttribPointer(positionAttribLocation, 3, gl.FLOAT, gl.FALSE, 8 * Float32Array.BYTES_PER_ELEMENT, 0);
-      gl.vertexAttribPointer( texCoordAttribLocation, 2, gl.FLOAT, gl.FALSE, 8 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-      gl.vertexAttribPointer( normalAttribLocation, 3, gl.FLOAT, gl.FALSE, 8 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+      var tangentAttribLocation = gl.getAttribLocation(shader3D.program, 'tangent');
+      gl.vertexAttribPointer(positionAttribLocation, 3, gl.FLOAT, gl.FALSE, 11 * Float32Array.BYTES_PER_ELEMENT, 0);
+      gl.vertexAttribPointer( texCoordAttribLocation, 2, gl.FLOAT, gl.FALSE, 11 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+      gl.vertexAttribPointer( normalAttribLocation, 3, gl.FLOAT, gl.FALSE, 11 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+      gl.vertexAttribPointer( tangentAttribLocation, 3, gl.FLOAT, gl.FALSE, 11 * Float32Array.BYTES_PER_ELEMENT, 8 * Float32Array.BYTES_PER_ELEMENT);
       gl.enableVertexAttribArray(positionAttribLocation);
       gl.enableVertexAttribArray(texCoordAttribLocation);
       gl.enableVertexAttribArray(normalAttribLocation);
+      gl.enableVertexAttribArray(tangentAttribLocation);
     }
 }
