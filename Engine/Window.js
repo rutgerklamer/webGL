@@ -46,6 +46,7 @@ function main() {
     initShaders();
     initFrameBuffer();
     initCannon();
+    camera.AddRigidBody();
     initMeshes();
 
     shader3D.Use();
@@ -145,6 +146,8 @@ function loop(timestamp) {
     camera.Update();
     camera.GetFront();
     camera.ProcessKeys();
+    shadowMesh.rigidBody.position.x  -= 3;
+
 
     requestAnimationFrame(loop);
 };
@@ -177,16 +180,16 @@ function initShaders()
 
 function initMeshes()
 {
-  for (var x = 0; x < 2; x++) {
-    for (var y = 0; y < 2; y++) {
-      for (var z = 0; z < 2; z++) {
+  for (var x = 0; x < 8; x++) {
+    for (var y = 0; y < 3; y++) {
+      for (var z = 0; z < 8; z++) {
       meshes.push(new Entity());
       meshes[meshes.length-1].CreateMesh();
-      meshes[meshes.length-1].position[0] = -40 + x * 15 + Rand();
-      meshes[meshes.length-1].position[1] = y * 15;
-      meshes[meshes.length-1].position[2] = z * 15 + Rand();
-      meshes[meshes.length-1].scale = [5,5,5];
-      meshes[meshes.length-1].boxTexture = CreateTexture("crate-image");
+      meshes[meshes.length-1].position[0] = -40 + x * 7 ;
+      meshes[meshes.length-1].position[1] = y * 10;
+      meshes[meshes.length-1].position[2] = z * 7  ;
+      meshes[meshes.length-1].scale = [3,3,3];
+      meshes[meshes.length-1].boxTexture = CreateTexture("wall-image");
       meshes[meshes.length-1].normalMap = CreateTexture("normal");
       meshes[meshes.length-1].depthMap = rttTexture;
       meshes[meshes.length-1].hasLighting = 1;
@@ -206,8 +209,8 @@ function initMeshes()
 
   shadowMesh = new Entity();
   shadowMesh.CreateMesh();
-  shadowMesh.position = [25.5,40,30];
-  shadowMesh.scale = [1,1,1];
+  shadowMesh.position = [700.5,5,11];
+  shadowMesh.scale = [5,5,5];
   shadowMesh.boxTexture = rttTexture;
   shadowMesh.normalMap = CreateTexture("normal");
   shadowMesh.depthMap = rttTexture;
@@ -218,7 +221,7 @@ function initMeshes()
   floor.CreateMesh();
   floor.position = [9,-11,10];
   floor.scale = [100,10,100];
-  floor.boxTexture = CreateTexture("crate-image");
+  floor.boxTexture = CreateTexture("floor-image");
   floor.hasLighting = 1;
   floor.normalMap = CreateTexture("normal");
   floor.depthMap = rttTexture;

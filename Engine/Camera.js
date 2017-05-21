@@ -5,7 +5,7 @@ function Camera() {
     this.right = vec3.create();
     this.worldUp = vec3.create();
     this.worldUp[1] = 1;
-
+    this.rigidBody;
     this.yaw = 252;;
     this.pitch = -40;;
 
@@ -17,6 +17,17 @@ function Camera() {
         vec3.normalize(this.front, frontTemp);
         vec3.cross(this.right, this.front, this.worldUp);
         vec3.cross(this.up, this.right, this.front);
+      //  this.rigidBody.position  = (new CANNON.Vec3(this.position[0], this.position[2], this.position[1]));
+      }
+    this.AddRigidBody = function()
+    {
+      var radius = 1;
+      this.rigidBody = new CANNON.Body({
+          mass: 15, // kg
+          position: new CANNON.Vec3(-1000, -1000, -1000), // m
+          shape: new CANNON.Box(new CANNON.Vec3(1.0,1.0,1.0))
+       });
+     world.addBody(this.rigidBody);
     }
     this.GetPosition = function() {
         return this.position;

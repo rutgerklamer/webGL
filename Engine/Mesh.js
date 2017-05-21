@@ -7,6 +7,8 @@ function Mesh() {
     this.normalMap;
     this.depthMap;
     this.hasLighting = 1;
+    this.position = vec3.create();
+    this.scale = vec3.create();
 
     this.VBO;
     this.IBO;
@@ -19,7 +21,7 @@ function Mesh() {
       this.rigidBody = new CANNON.Body({
           mass: 15, // kg
           position: new CANNON.Vec3(this.position[0], this.position[2], this.position[1]), // m
-          shape: new CANNON.Box(new CANNON.Vec3(5.0,5.0,5.0))
+          shape: new CANNON.Box(new CANNON.Vec3(this.scale[0],this.scale[2],this.scale[1]))
        });
      world.addBody(this.rigidBody);
      this.hasRigidBody = true;
