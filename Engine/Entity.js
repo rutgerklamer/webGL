@@ -13,18 +13,15 @@ var Entity = function()
     var xRotationMatrix = new Float32Array(16);
     var yRotationMatrix = new Float32Array(16);
     var identityMatrix = new Float32Array(16);
-
     mat4.identity(identityMatrix);
     mat4.rotate(xRotationMatrix, identityMatrix, angle, [0, 1 * dt, 0]);
     mat4.rotate(yRotationMatrix, identityMatrix, angle / 4, [1, 0, 0]);
     mat4.mul(this.worldMatrix, yRotationMatrix, xRotationMatrix);
+    if (this.hasRigidBody) {
+      this.position = [this.rigidBody.position.x,this.rigidBody.position.z,this.rigidBody.position.y];
+    }
     mat4.translate(this.worldMatrix, this.worldMatrix, this.position);
     mat4.scale(this.worldMatrix, this.worldMatrix, this.scale);
 
-    /*this.VBO = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.VBO);
-
-    this.IBO = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.IBO);*/
   }
 }

@@ -29,7 +29,9 @@ var renderbuffer;
 
 var HUDmesh;
 var world;
-var OimoMesh;
+var fixedTimeStep;
+var maxSubSteps;
+var sphereBody;
 
 function main() {
     camera = new Camera();
@@ -43,8 +45,8 @@ function main() {
     initGL();
     initShaders();
     initFrameBuffer();
+    initCannon();
     initMeshes();
-    initOimo();
 
     shader3D.Use();
 
@@ -120,8 +122,6 @@ function loop(timestamp) {
           meshes[i].hasLighting = 1;
     }
 
-    console.log(shadowMesh.position);
-
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.cullFace(gl.BACK);
     gl.viewport(0,0,1024, 720);
@@ -132,11 +132,11 @@ function loop(timestamp) {
     }
     Render(light,shader3D);
     Render(floor,shader3D);
-    world.step();
     //console.log(OimoMesh.getPosition().y)
-    shadowMesh.position[0] = OimoMesh.getPosition().x;
-    shadowMesh.position[1] = OimoMesh.getPosition().y;
-    shadowMesh.position[2] = OimoMesh.getPosition().z;
+
+  //  shadowMesh.position = [sphereBody.position.x,sphereBody.position.z,sphereBody.position.y];
+   /*console.log(shadowMesh.position);
+   console.log(camera.position);*/
 
     Render(shadowMesh,shader3D);
     shader2D.Use();
@@ -177,19 +177,21 @@ function initShaders()
 
 function initMeshes()
 {
-  for (var x = 0; x < 10; x++) {
-    for (var y = 0; y < 10; y++) {
+  for (var x = 0; x < 2; x++) {
+    for (var y = 0; y < 2; y++) {
+      for (var z = 0; z < 2; z++) {
       meshes.push(new Entity());
       meshes[meshes.length-1].CreateMesh();
-      meshes[meshes.length-1].position[0] = -40 + x * 10;
-      meshes[meshes.length-1].position[1] = y * 10;
-      meshes[meshes.length-1].position[2] = 0;
+      meshes[meshes.length-1].position[0] = -40 + x * 15 + Rand();
+      meshes[meshes.length-1].position[1] = y * 15;
+      meshes[meshes.length-1].position[2] = z * 15 + Rand();
       meshes[meshes.length-1].scale = [5,5,5];
       meshes[meshes.length-1].boxTexture = CreateTexture("crate-image");
       meshes[meshes.length-1].normalMap = CreateTexture("normal");
       meshes[meshes.length-1].depthMap = rttTexture;
       meshes[meshes.length-1].hasLighting = 1;
-
+      meshes[meshes.length-1].AddRigidBody();
+      }
     }
   }
 
@@ -201,14 +203,17 @@ function initMeshes()
   light.boxTexture = CreateTexture("normal");
   light.normalMap = CreateTexture("normal");
   light.depthMap = rttTexture;
+
   shadowMesh = new Entity();
   shadowMesh.CreateMesh();
-  shadowMesh.position = [25.5,200,30];
+  shadowMesh.position = [25.5,40,30];
   shadowMesh.scale = [1,1,1];
   shadowMesh.boxTexture = rttTexture;
   shadowMesh.normalMap = CreateTexture("normal");
   shadowMesh.depthMap = rttTexture;
   shadowMesh.hasLighting = 0;
+  shadowMesh.AddRigidBody();
+
   floor = new Entity();
   floor.CreateMesh();
   floor.position = [9,-11,10];
@@ -217,6 +222,7 @@ function initMeshes()
   floor.hasLighting = 1;
   floor.normalMap = CreateTexture("normal");
   floor.depthMap = rttTexture;
+
 
   HUDmesh = new HUDMesh();
   HUDmesh.CreateMesh();
@@ -249,28 +255,35 @@ function initFrameBuffer()
   gl.bindRenderbuffer(gl.RENDERBUFFER, null);
 }
 
-function initOimo()
+function initCannon()
 {
-  world = new OIMO.World({
-    timestep: 1/60,
-    iterations: 8,
-    broadphase: 2, // 1 brute force, 2 sweep and prune, 3 volume tree
-    worldscale: 1, // scale full world
-    random: true,  // randomize sample
-    info: false,   // calculate statistic or not
-    gravity: [0,-9.8,0]
-});
+   world = new CANNON.World();
+  world.gravity.set(0, 0, -9.82); // m/s²
 
-OimoMesh = world.add({
-    type:'box', // type of shape : sphere, box, cylinder
-    size:[1,1,1], // size of shape
-    pos: [shadowMesh.position[0], shadowMesh.position[1], shadowMesh.position[2]], // start position in degree
-    rot:[0,0,90], // start rotation in degree
-    move:true, // dynamic or statique
-    density: 1,
-    friction: 0.2,
-    restitution: 0.2,
-    belongsTo: 1, // The bits of the collision groups to which the shape belongs.
-    collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
-});
+  // Create a sphere
+  var radius = 1; // m
+
+
+  // Create a plane
+  var groundBody = new CANNON.Body({
+      mass: 0 // mass == 0 makes the body static
+  });
+  var groundShape = new CANNON.Plane();
+  groundBody.addShape(groundShape);
+  world.addBody(groundBody);
+
+  fixedTimeStep = 1.0 / 60.0; // seconds
+  maxSubSteps = 3;
+
+  // Start the simulation loop
+  var lastTime;
+  (function simloop(time){
+    requestAnimationFrame(simloop);
+    if(lastTime !== undefined) {
+       var dt = (time - lastTime) / 1000;
+       world.step(fixedTimeStep, dt, maxSubSteps);
+    }
+    //console.log("Sphere z position: " + shadowMesh.rigidBody.position.z);
+    lastTime = time;
+  })();
 }

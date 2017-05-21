@@ -1,5 +1,7 @@
 function Mesh() {
     var boxVertices;
+    this.rigidBody;
+    this.hasRigidBody;
     this.boxIndices;
     this.boxTexture;
     this.normalMap;
@@ -11,7 +13,20 @@ function Mesh() {
 
     this.indices;
     this.vertices;
+    this.AddRigidBody = function()
+    {
+      var radius = 1;
+      this.rigidBody = new CANNON.Body({
+          mass: 15, // kg
+          position: new CANNON.Vec3(this.position[0], this.position[2], this.position[1]), // m
+          shape: new CANNON.Box(new CANNON.Vec3(5.0,5.0,5.0))
+       });
+     world.addBody(this.rigidBody);
+     this.hasRigidBody = true;
+    }
     this.CreateMesh = function() {
+
+
         boxVertices = [
             -1.0, 1.0, -1.0, 0.0, 0.0, 0.0,  1.0,  0.0,
             -1.0, 1.0, 1.0, 0.0, 1.0, 0.0,  1.0,  0.0,
