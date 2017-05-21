@@ -28,6 +28,8 @@ var rttTexture;
 var renderbuffer;
 
 var HUDmesh;
+var world;
+var OimoMesh;
 
 function main() {
     camera = new Camera();
@@ -42,6 +44,7 @@ function main() {
     initShaders();
     initFrameBuffer();
     initMeshes();
+    initOimo();
 
     shader3D.Use();
 
@@ -117,6 +120,8 @@ function loop(timestamp) {
           meshes[i].hasLighting = 1;
     }
 
+    console.log(shadowMesh.position);
+
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.cullFace(gl.BACK);
     gl.viewport(0,0,1024, 720);
@@ -127,8 +132,13 @@ function loop(timestamp) {
     }
     Render(light,shader3D);
     Render(floor,shader3D);
+    world.step();
+    //console.log(OimoMesh.getPosition().y)
+    shadowMesh.position[0] = OimoMesh.getPosition().x;
+    shadowMesh.position[1] = OimoMesh.getPosition().y;
+    shadowMesh.position[2] = OimoMesh.getPosition().z;
+
     Render(shadowMesh,shader3D);
-    shadowMesh.position[0] += 0.01;
     shader2D.Use();
     Render2D(HUDmesh,shader2D);
     var camPos = vec3.create();
@@ -167,11 +177,11 @@ function initShaders()
 
 function initMeshes()
 {
-  for (var x = 0; x < 19; x++) {
+  for (var x = 0; x < 10; x++) {
     for (var y = 0; y < 10; y++) {
       meshes.push(new Entity());
       meshes[meshes.length-1].CreateMesh();
-      meshes[meshes.length-1].position[0] = -80 + x * 10;
+      meshes[meshes.length-1].position[0] = -40 + x * 10;
       meshes[meshes.length-1].position[1] = y * 10;
       meshes[meshes.length-1].position[2] = 0;
       meshes[meshes.length-1].scale = [5,5,5];
@@ -193,7 +203,7 @@ function initMeshes()
   light.depthMap = rttTexture;
   shadowMesh = new Entity();
   shadowMesh.CreateMesh();
-  shadowMesh.position = [25.5,20,30];
+  shadowMesh.position = [25.5,200,30];
   shadowMesh.scale = [1,1,1];
   shadowMesh.boxTexture = rttTexture;
   shadowMesh.normalMap = CreateTexture("normal");
@@ -237,4 +247,30 @@ function initFrameBuffer()
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   gl.bindTexture(gl.TEXTURE_2D, null);
   gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+}
+
+function initOimo()
+{
+  world = new OIMO.World({
+    timestep: 1/60,
+    iterations: 8,
+    broadphase: 2, // 1 brute force, 2 sweep and prune, 3 volume tree
+    worldscale: 1, // scale full world
+    random: true,  // randomize sample
+    info: false,   // calculate statistic or not
+    gravity: [0,-9.8,0]
+});
+
+OimoMesh = world.add({
+    type:'box', // type of shape : sphere, box, cylinder
+    size:[1,1,1], // size of shape
+    pos: [shadowMesh.position[0], shadowMesh.position[1], shadowMesh.position[2]], // start position in degree
+    rot:[0,0,90], // start rotation in degree
+    move:true, // dynamic or statique
+    density: 1,
+    friction: 0.2,
+    restitution: 0.2,
+    belongsTo: 1, // The bits of the collision groups to which the shape belongs.
+    collidesWith: 0xffffffff // The bits of the collision groups with which the shape collides.
+});
 }
