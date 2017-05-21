@@ -7,6 +7,7 @@ varying vec3 Tangent;
 varying mat4 MWorld;
 varying mat3 toTangentSpace;
 varying vec4 FragPosLightSpace;
+varying vec3 lighting;
 
 uniform vec3 lightPosition;
 uniform vec3 camPosition;
@@ -17,15 +18,39 @@ uniform sampler2D normalMap;
 uniform sampler2D depthMap;
 
 
-float ShadowCalculation(vec4 fragPosLightSpace, vec3 norms)
+float ShadowCalculation(vec4 fragPosLightSpace, vec3 norms, vec3 lightDir)
 {
-    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    projCoords = projCoords * 0.5 + 0.5 + vec3(vec2(norms / 1500.0),0.0);
-    float closestDepth = texture2D(depthMap, vec2(projCoords.xy )).r;
-    float currentDepth = projCoords.z ;
-    float bias = 0.005;
-    float shadow = currentDepth - bias > closestDepth  ? 0.5 : 0.0;
-    return shadow;
+  // perform perspective divide
+  vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+  // Transform to [0,1] range
+  projCoords = projCoords * 0.5 + 0.5;
+  // Get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+  float closestDepth = texture2D(depthMap, projCoords.xy).r;
+  // Get depth of current fragment from light's perspective
+  float currentDepth = projCoords.z;
+  // Calculate bias (based on depth map resolution and slope)
+  vec3 normal = normalize(norms);
+  float bias = 0.005;
+  // Check whether current frag pos is in shadow
+  // float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
+  // PCF
+  float shadow = 0.0;
+  vec2 texelSize = vec2(1024.0 * 8.0, 720.0 * 8.0);
+  for(int x = -1; x <= 1; ++x)
+  {
+      for(int y = -1; y <= 1; ++y)
+      {
+          float pcfDepth = texture2D(depthMap, projCoords.xy + vec2(x, y) * texelSize).r;
+          shadow += currentDepth - bias > pcfDepth  ? 0.8 : 0.0;
+      }
+  }
+  shadow /= 9.0;
+
+  // Keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
+  if(projCoords.z > 1.0)
+      shadow = 0.0;
+
+  return shadow;
 }
 
 void main()
@@ -48,13 +73,13 @@ void main()
       float diff = max(dot(norm, lightDir), 0.0);
       vec3 diffuse = diff * lightColor;
 
-      float specularStrength = 3.5;
+      float specularStrength = 0.8;
       vec3 viewDir =  normalize(camPosition - worldPos);
       vec3 reflectDir = reflect(-lightDir, norm);
       float spec = pow(max(dot(viewDir, reflectDir), 0.0), 64.0);
       vec3 specular = specularStrength * spec * lightColor;
 
-      float shadow = ShadowCalculation(FragPosLightSpace, norm);
+      float shadow = ShadowCalculation(FragPosLightSpace, fragNormals, lightDir);
 
       vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * DiffuseColor.rgb;
 

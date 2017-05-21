@@ -7,6 +7,7 @@ attribute vec3 tangent;
 
 varying vec2 fragTexCoord;
 varying vec3 fragNormals;
+varying vec3 lighting;
 varying vec3 worldPos;
 varying vec3 Tangent;
 varying mat4 MWorld;

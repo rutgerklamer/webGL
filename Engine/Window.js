@@ -75,7 +75,7 @@ function loop(timestamp) {
 
     frameCount++;
     elapsedTime += (currentTime - lastTime);
-    var ms = ((currentTime - lastTime) / 1000);
+    var ms = ((currentTime - lastTime) / 100);
 
 
     lastTime = currentTime;
@@ -83,9 +83,9 @@ function loop(timestamp) {
     if (elapsedTime >= 1000) {
         fps = frameCount;
         frameCount = 0;
-        elapsedTime -= 10000;
+        elapsedTime -= 1000;
 
-        console.log("Your current fps is : " + fps / 10);
+        console.log("Your current fps is : " + fps );
     }
 
     gl.clearColor(0.82, 1.0, 0.4, 1.0);
@@ -109,7 +109,7 @@ function loop(timestamp) {
     shader3DDepth.Use();
     gl.viewport(0,0,rttFramebuffer.width, rttFramebuffer.height);
     light.Draw();
-    gl.cullFace(gl.FRONT);
+  //  gl.cullFace(gl.FRONT);
     RenderShadows(shadowMesh,shader3DDepth);
     var tempPosition = vec3.create();
     tempPosition = shadowMesh.position;
@@ -118,13 +118,11 @@ function loop(timestamp) {
     shadowMesh.position = tempPosition;
     RenderShadows(floor,shader3DDepth);
     for (i = 0; i < meshes.length; i++) {
-          meshes[i].hasLighting = 0;
           RenderShadows(meshes[i], shader3DDepth);
-          meshes[i].hasLighting = 1;
     }
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    gl.cullFace(gl.BACK);
+  //  gl.cullFace(gl.BACK);
     gl.viewport(0,0,1024, 720);
 
     shader3D.Use();
@@ -158,7 +156,7 @@ function initGL()
   gl = canvas.getContext('webgl2');
 
   if (!gl) {
-      console.log('WebGL is now supported! :(, I will try it one more time on experimental mode.');
+      alert('WebGL is now supported! :(, I will try it one more time on experimental mode.');
       gl = canvas.getContext('experimental-webgl');
   }
   if (!gl) {
@@ -180,19 +178,19 @@ function initShaders()
 
 function initMeshes()
 {
-  for (var x = 0; x < 8; x++) {
-    for (var y = 0; y < 3; y++) {
-      for (var z = 0; z < 8; z++) {
+  for (var x = 0; x < 18; x++) {
+    for (var y = 0; y < 14; y++) {
+      for (var z = 0; z < 2; z++) {
       meshes.push(new Entity());
       meshes[meshes.length-1].CreateMesh();
       meshes[meshes.length-1].position[0] = -40 + x * 7 ;
       meshes[meshes.length-1].position[1] = y * 10;
-      meshes[meshes.length-1].position[2] = z * 7  ;
+      meshes[meshes.length-1].position[2] = z * 8  + 14 ;
       meshes[meshes.length-1].scale = [3,3,3];
       meshes[meshes.length-1].boxTexture = CreateTexture("wall-image");
       meshes[meshes.length-1].normalMap = CreateTexture("normal");
       meshes[meshes.length-1].depthMap = rttTexture;
-      meshes[meshes.length-1].hasLighting = 1;
+      meshes[meshes.length-1].hasLighting = 0;
       meshes[meshes.length-1].AddRigidBody();
       }
     }
@@ -209,7 +207,7 @@ function initMeshes()
 
   shadowMesh = new Entity();
   shadowMesh.CreateMesh();
-  shadowMesh.position = [700.5,5,11];
+  shadowMesh.position = [700.5,5,20];
   shadowMesh.scale = [5,5,5];
   shadowMesh.boxTexture = rttTexture;
   shadowMesh.normalMap = CreateTexture("normal");
@@ -219,7 +217,7 @@ function initMeshes()
 
   floor = new Entity();
   floor.CreateMesh();
-  floor.position = [9,-11,10];
+  floor.position = [9,-10,10];
   floor.scale = [100,10,100];
   floor.boxTexture = CreateTexture("floor-image");
   floor.hasLighting = 1;

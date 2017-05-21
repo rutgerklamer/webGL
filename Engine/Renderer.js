@@ -31,12 +31,11 @@ function Render(mesh, shader) {
     var near_plane = 1.0;
     var far_plane = 700.5;
     mat4.ortho(lightProjection, -100.0, 100.0, -50.0, 100.0, near_plane, far_plane);
-    var lightpos = vec3.create();
-    lightpos[0] += light.position[0] - 30;
-    lightpos[1] += light.position[1] + 10;
-    lightpos[2] += light.position[2] + 150;
-    mat4.lookAt(lightView, [10, 50, 195],  [9.988273620605469, 49.71933364868164, 194.04026794433594], [0, 1, 0]);
-
+    var camerafront = vec3.create();
+    camerafront[0] = - camera.GetFront()[0];
+    camerafront[1] = - camera.GetFront()[1];
+    camerafront[2] = - camera.GetFront()[2];
+    mat4.lookAt(lightView, light.position, camerafront, [0, 1, 0]);
     mat4.perspective(projMatrix, glMatrix.toRadian(45), canvas.width / canvas.height, 0.1, 1000.0);
     viewMatrix = camera.GetViewMatrix();
 
@@ -115,13 +114,13 @@ function Render2D(mesh, shader)
       var near_plane = 1.0;
       var far_plane = 700.5;
       mat4.ortho(lightProjection, -100.0, 100.0, -50.0, 100.0, near_plane, far_plane);
-      light.position = [10, 50, 195];
+      light.position = [10, 100, 195];
       var frontPos = vec3.create();
       var camerafront = vec3.create();
       camerafront[0] = - camera.GetFront()[0];
       camerafront[1] = - camera.GetFront()[1];
       camerafront[2] = - camera.GetFront()[2];
-      mat4.lookAt(lightView, [10, 50, 195], [9.988273620605469, 49.71933364868164, 194.04026794433594], [0, 1, 0]);
+      mat4.lookAt(lightView, light.position, camerafront, [0, 1, 0]);
       viewMatrix = camera.GetViewMatrix();
 
 
